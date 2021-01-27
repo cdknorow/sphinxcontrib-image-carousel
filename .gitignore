@@ -1,0 +1,5 @@
+_build/
+.vscode/
+logger.log
+usage_logs.log
+__pycache__/
