@@ -25,6 +25,8 @@ def get_slide_info(self, code, options, path, prefix="image-carousel"):
         for fname in filenames
     ]
 
+    ensuredir(os.path.join(self.builder.outdir, "_images"))
+
     for filepath, outfn in zip(filepaths, outfns):
         shutil.copy(filepath, os.path.dirname(outfn))
 
@@ -37,8 +39,8 @@ def get_slide_info(self, code, options, path, prefix="image-carousel"):
 
 def create_image_carousel(carousel_index, slides):
 
-    class_name = "slides-{}".format(carousel_index)
-    dot_name = "dots-{}".format(carousel_index)
+    class_name = "slide-{}".format(carousel_index)
+    dot_name = "dot-{}".format(carousel_index)
 
     html_output = ""
     total_slides = len(slides)
@@ -76,7 +78,7 @@ def create_image_carousel(carousel_index, slides):
         )
 
     script = "<script>  var slideIndex = {{{}}};".format(
-        ",".join("{}:{}".format(x, x) for x in range(carousel_index + 1))
+        ",".join("{}:0".format(x) for x in range(carousel_index + 1))
     ) + "showSlides({carousel_index}); </script> ".format(carousel_index=carousel_index)
 
     return html_output + script
@@ -116,13 +118,11 @@ class ImageCarousel(Directive):
         if not hasattr(env, "all_image_carousels"):
             env.all_image_carousels = {}
             if not hasattr(env.all_image_carousels, env.docname):
-                print(env.docname)
                 env.all_image_carousels[env.docname] = []
 
         node = image_carousel()
         node["code"] = dotcode
         node["path"] = os.path.dirname(env.docname)
-        print(env.all_image_carousels)
         node["options"] = {"carousel_index": len(env.all_image_carousels[env.docname])}
 
         env.all_image_carousels[env.docname].append(
@@ -141,9 +141,10 @@ def setup(app):
     )
 
     app.add_directive("imagecarousel", ImageCarousel)
-
     app.add_css_file("image_carousel.css")
-    app.add_javascript("image_carousel.js")
+    app.add_js_file("image_carousel.js")
+    # app.add_stylesheet("image_carousel.css")
+    # app.add_javascript("image_carousel.js")
 
     return {
         "version": "0.1",

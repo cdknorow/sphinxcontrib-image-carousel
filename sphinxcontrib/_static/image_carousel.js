@@ -1,9 +1,9 @@
 function getClassName(index) {
-  return "image-carousel-slides-" + index;
+  return "image-carousel-slide-" + index;
 }
 
 function getDotName(index) {
-  return "image-carousel-dots-" + index;
+  return "image-carousel-dot-" + index;
 }
 
 function plusSlides(index, n) {
@@ -11,7 +11,7 @@ function plusSlides(index, n) {
   showSlides(index);
 }
 
-function currentSlide(indexx, n) {
+function currentSlide(index, n) {
   slideIndex[index] = n;
   showSlides(className);
 }
@@ -24,18 +24,18 @@ function showSlides(index) {
   var slides = document.getElementsByClassName(className);
   var dots = document.getElementsByClassName(dotName);
 
-  if (n > slides.length) {
-    slideIndex[index] = 1;
+  if (n >= slides.length) {
+    slideIndex[index] = 0;
   }
-  if (n < 1) {
+  if (n < 0) {
     slideIndex[index] = slides.length;
   }
   for (i = 0; i < slides.length; i++) {
     slides[i].style.display = "none";
   }
   for (i = 0; i < dots.length; i++) {
-    dots[i].className = dots[i].className.replace(" active", "");
+    dots[i].className = dots[i].className.replace(" image-carousel-active", "");
   }
-  slides[slideIndex[index] - 1].style.display = "block";
-  dots[slideIndex[index] - 1].className += " active";
+  slides[slideIndex[index]].style.display = "block";
+  dots[slideIndex[index]].className += " image-carousel-active";
 }
