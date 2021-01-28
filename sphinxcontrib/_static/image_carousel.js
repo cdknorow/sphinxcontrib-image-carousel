@@ -28,7 +28,7 @@ function showSlides(index) {
     slideIndex[index] = 0;
   }
   if (n < 0) {
-    slideIndex[index] = slides.length;
+    slideIndex[index] = slides.length - 1;
   }
   for (i = 0; i < slides.length; i++) {
     slides[i].style.display = "none";
