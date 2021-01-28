@@ -6,31 +6,33 @@ import shutil
 from sphinx.util.osutil import ensuredir
 
 
-def get_slide_info(self, code, options, prefix="image-carousel"):
+def get_slide_info(self, code, options, path, prefix="image-carousel"):
     """
     Get path of output file.
     """
     content = code.split(",")
     filenames = []
     captions = []
-    print("content")
-    print(content)
+
     for i in range(0, len(content), 2):
         filenames.append(content[i].rstrip().lstrip())
         captions.append(content[i + 1].rstrip().lstrip())
 
     # HTML
-    relfns = [posixpath.join(self.builder.imgpath, fname) for fname in filenames]
+    filepaths = [posixpath.join(path, fname) for fname in filenames]
     outfns = [
-        os.path.join(self.builder.outdir, "_images", fname) for fname in filenames
+        os.path.join(self.builder.outdir, "_images", os.path.basename(fname))
+        for fname in filenames
     ]
 
-    for relfn, outfn in zip(relfns, outfns):
-        ensuredir(os.path.dirname(outfn))
-        print(relfn, outfn)
-        shutil.copy(relfn, os.path.dirname(outfn))
+    for filepath, outfn in zip(filepaths, outfns):
+        shutil.copy(filepath, os.path.dirname(outfn))
 
-    return list(zip(relfns, outfns, captions))
+    relfns = [
+        posixpath.join("../_images/", os.path.basename(fname)) for fname in filenames
+    ]
+
+    return list(zip(relfns, captions))
 
 
 def create_image_carousel(carousel_index, slides):
@@ -50,13 +52,13 @@ def create_image_carousel(carousel_index, slides):
             </div>
             """.format(
             class_name=class_name,
-            index=index,
+            index=index + 1,
             total_slides=total_slides,
             image_name=name,
             text_description=text,
         )
 
-    for index, (relfn, _, text) in enumerate(slides):
+    for index, (relfn, text) in enumerate(slides):
         html_output += gen_slide(index, relfn, text)
 
     html_output += """<a class="image-carousel-prev" onclick="plusSlides({carousel_index}, -1)">&#10094;</a>
@@ -84,7 +86,7 @@ def render_dot_html(self, node, code, options, imgcls=None, alt=None):
 
     carousel_index = options["carousel_index"]
 
-    slides = get_slide_info(self, code[0], options)
+    slides = get_slide_info(self, code[0], options, node["path"])
 
     self.body.append(self.starttag(node, "div", CLASS="image-carousel-container"))
 
@@ -114,10 +116,13 @@ class ImageCarousel(Directive):
         if not hasattr(env, "all_image_carousels"):
             env.all_image_carousels = {}
             if not hasattr(env.all_image_carousels, env.docname):
+                print(env.docname)
                 env.all_image_carousels[env.docname] = []
 
         node = image_carousel()
         node["code"] = dotcode
+        node["path"] = os.path.dirname(env.docname)
+        print(env.all_image_carousels)
         node["options"] = {"carousel_index": len(env.all_image_carousels[env.docname])}
 
         env.all_image_carousels[env.docname].append(
@@ -142,6 +147,4 @@ def setup(app):
 
     return {
         "version": "0.1",
-        "parallel_read_safe": True,
-        "parallel_write_safe": True,
     }
