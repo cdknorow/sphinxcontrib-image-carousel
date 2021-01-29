@@ -117,8 +117,8 @@ class ImageCarousel(Directive):
 
         if not hasattr(env, "all_image_carousels"):
             env.all_image_carousels = {}
-            if not hasattr(env.all_image_carousels, env.docname):
-                env.all_image_carousels[env.docname] = []
+        if not hasattr(env.all_image_carousels, env.docname):
+            env.all_image_carousels[env.docname] = []
 
         node = image_carousel()
         node["code"] = dotcode
