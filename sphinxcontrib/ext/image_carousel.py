@@ -30,9 +30,8 @@ def get_slide_info(self, code, options, path, prefix="image-carousel"):
     for filepath, outfn in zip(filepaths, outfns):
         shutil.copy(filepath, os.path.dirname(outfn))
 
-    relfns = [
-        posixpath.join("../_images/", os.path.basename(fname)) for fname in filenames
-    ]
+    img_dir = "../" * len(os.path.split(path)) + "_images/"
+    relfns = [posixpath.join(img_dir, os.path.basename(fname)) for fname in filenames]
 
     return list(zip(relfns, captions))
 
