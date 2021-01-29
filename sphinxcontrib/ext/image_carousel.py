@@ -117,7 +117,7 @@ class ImageCarousel(Directive):
 
         if not hasattr(env, "all_image_carousels"):
             env.all_image_carousels = {}
-        if not hasattr(env.all_image_carousels, env.docname):
+        if env.all_image_carousels.get(env.docname, None) is None:
             env.all_image_carousels[env.docname] = []
 
         node = image_carousel()
@@ -143,8 +143,6 @@ def setup(app):
     app.add_directive("imagecarousel", ImageCarousel)
     app.add_css_file("image_carousel.css")
     app.add_js_file("image_carousel.js")
-    # app.add_stylesheet("image_carousel.css")
-    # app.add_javascript("image_carousel.js")
 
     return {
         "version": "0.1",
